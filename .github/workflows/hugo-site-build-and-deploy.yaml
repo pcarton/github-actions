@@ -1,7 +1,7 @@
 name: Build and Deploy Hugo Site
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       google_region:
         description: 'GCP Region to deploy the Cloud Run app to'
