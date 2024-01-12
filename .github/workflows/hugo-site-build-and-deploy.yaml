@@ -37,7 +37,7 @@ on:
         required: true
         type: string
     secrets:
-      github_token:
+      input_github_token:
         required: true
         type: string
 
@@ -49,7 +49,7 @@ jobs:
       pull-requests: 'read'
       id-token: 'write'
     env:
-      GITHUB_TOKEN: ${{ secrets.github_token }}
+      GITHUB_TOKEN: ${{ secrets.input_github_token }}
       GOOGLE_REGION: ${{ inputs.google_region }}
       GOOGLE_ARTIFACT_REGISTRY: ${{ inputs.google_artifact_registry }}
       IMAGE_NAME:  ${{ inputs.image_name }}
