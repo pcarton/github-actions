@@ -1,0 +1,62 @@
+name: Build and Deploy Hugo Site
+
+on:
+  workflow_call:
+    inputs:
+      google_region:
+        description: 'GCP Region to deploy the Cloud Run app to'
+        required: true
+        type: string
+      service_name:
+        description: 'The name of the cloud run service'
+        required: true
+        type: string
+      image:
+        description: 'The fully qualified id of the docker image to use'
+        required: true
+        type: string
+      cloud_run_service_account:
+        description: 'The service account used by the cloud run instance'
+        required: true
+        type: string
+      max_instances:
+        description: 'The maximum number of cloud run instances to run in this service'
+        required: false
+        type: string
+        default: "3"
+      workload_identity_provider:
+        description: 'The workload identity provider pool'
+        required: true
+        type: string
+      workload_identity_service_account:
+        description: 'The service account used by GitHub actions'
+        required: true
+        type: string
+
+jobs:
+  deploy-to-cloudrun:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      pull-requests: 'read'
+      id-token: 'write'
+    env:
+      GOOGLE_REGION: ${{ inputs.google_region }}
+      SERVICE_NAME: ${{ inputs.service_name }}
+      IMAGE:  ${{ inputs.image }}
+      CLOUD_RUN_SERVICE_ACCOUNT: ${{ inputs.cloud_run_service_account }}
+      MAX_INSTANCES: ${{ inputs.max_instances }}
+
+    steps:
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v2.0.1'
+      with:
+        workload_identity_provider: ${{ inputs.workload_identity_provider }}
+        service_account: ${{ inputs.workload_identity_service_account }}
+
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v2.0.1'
+
+    - id: deploy_image
+      name: "Deploy image to Cloud Run"
+      run: "gcloud run deploy --image=$IMAGE --allow-unauthenticated --max-instances $MAX_INSTANCES --platform=managed --region=$GOOGLE_REGION $SERVICE_NAME --ingress=internal-and-cloud-load-balancing --service-account=$CLOUD_RUN_SERVICE_ACCOUNT"
