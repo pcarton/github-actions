@@ -29,7 +29,7 @@ on:
     outputs:
       image:
         description: "The versioned image identifier"
-        value: ${{ jobs.build-and-deploy.outputs.image }}
+        value: ${{ jobs.build-docker-to-gar.outputs.image }}
 
 jobs:
   build-docker-to-gar:
