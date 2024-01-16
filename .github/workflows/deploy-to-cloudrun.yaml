@@ -7,6 +7,10 @@ on:
         description: 'GCP Region to deploy the Cloud Run app to'
         required: true
         type: string
+      service_name:
+        description: 'The name of the cloud run service'
+        required: true
+        type: string
       image:
         description: 'The fully qualified id of the docker image to use'
         required: true
@@ -38,6 +42,7 @@ jobs:
       id-token: 'write'
     env:
       GOOGLE_REGION: ${{ inputs.google_region }}
+      SERVICE_NAME: ${{ inputs.service_name }}
       IMAGE:  ${{ inputs.image }}
       CLOUD_RUN_SERVICE_ACCOUNT: ${{ inputs.cloud_run_service_account }}
       MAX_INSTANCES: ${{ inputs.max_instances }}
@@ -54,4 +59,4 @@ jobs:
 
     - id: deploy_image
       name: "Deploy image to Cloud Run"
-      run: "gcloud run deploy --image=$IMAGE --allow-unauthenticated --max-instances $MAX_INSTANCES --platform=managed --region=$GOOGLE_REGION $IMAGE_NAME --ingress=internal-and-cloud-load-balancing --service-account=$CLOUD_RUN_SERVICE_ACCOUNT"
+      run: "gcloud run deploy --image=$IMAGE --allow-unauthenticated --max-instances $MAX_INSTANCES --platform=managed --region=$GOOGLE_REGION $SERVICE_NAME --ingress=internal-and-cloud-load-balancing --service-account=$CLOUD_RUN_SERVICE_ACCOUNT"
