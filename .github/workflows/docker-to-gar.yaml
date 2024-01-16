@@ -1,12 +1,8 @@
-name: Build and Deploy Hugo Site
+name: Build Docker to GAR
 
 on:
   workflow_call:
     inputs:
-      google_region:
-        description: 'GCP Region to deploy the Cloud Run app to'
-        required: true
-        type: string
       google_artifact_registry:
         description: 'The Google Artifact Registry instance to upload the image to'
         required: true
@@ -19,15 +15,6 @@ on:
         description: 'The tag of the docker image to upload'
         required: true
         type: string
-      cloud_run_service_account:
-        description: 'The service account used by the cloud run instance'
-        required: true
-        type: string
-      max_instances:
-        description: 'The maximum number of cloud run instances to run in this service'
-        required: false
-        type: string
-        default: "3"
       workload_identity_provider:
         description: 'The workload identity provider pool'
         required: true
@@ -39,10 +26,16 @@ on:
     secrets:
       input_github_token:
         required: true
+    outputs:
+      image:
+        description: "The versioned image identifier"
+        value: ${{ jobs.build-and-deploy.outputs.image }}
 
 jobs:
-  build-and-deploy:
+  build-docker-to-gar:
     runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.build_image.outputs.image }}
     permissions:
       contents: 'read'
       pull-requests: 'read'
@@ -53,8 +46,6 @@ jobs:
       GOOGLE_ARTIFACT_REGISTRY: ${{ inputs.google_artifact_registry }}
       IMAGE_NAME:  ${{ inputs.image_name }}
       IMAGE_TAG: ${{ inputs.image_tag }}
-      CLOUD_RUN_SERVICE_ACCOUNT: ${{ inputs.cloud_run_service_account }}
-      MAX_INSTANCES: ${{ inputs.max_instances }}
 
     steps:
     - name: Checkout
@@ -78,7 +69,9 @@ jobs:
 
     - id: build_image
       name: 'Build Docker image to GAR'
-      run: "gcloud builds submit --tag us-docker.pkg.dev/$GCLOUD_PROJECT/$GOOGLE_ARTIFACT_REGISTRY/$IMAGE_NAME:$IMAGE_TAG"
+      run: |-
+        gcloud builds submit --tag us-docker.pkg.dev/$GCLOUD_PROJECT/$GOOGLE_ARTIFACT_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+        echo "image=us-docker.pkg.dev/$GCLOUD_PROJECT/$GOOGLE_ARTIFACT_REGISTRY/$IMAGE_NAME:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
     - id: generate_sbom
       name: 'Generate SBOM for Image'
@@ -90,7 +83,3 @@ jobs:
         docker pull us-docker.pkg.dev/$GCLOUD_PROJECT/$GOOGLE_ARTIFACT_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
         docker tag us-docker.pkg.dev/$GCLOUD_PROJECT/$GOOGLE_ARTIFACT_REGISTRY/$IMAGE_NAME:$IMAGE_TAG us-docker.pkg.dev/$GCLOUD_PROJECT/$GOOGLE_ARTIFACT_REGISTRY/$IMAGE_NAME:latest
         docker push us-docker.pkg.dev/$GCLOUD_PROJECT/$GOOGLE_ARTIFACT_REGISTRY/$IMAGE_NAME:latest
-
-    - id: deploy_image
-      name: "Deploy image to Cloud Run"
-      run: "gcloud run deploy --image=us-docker.pkg.dev/$GCLOUD_PROJECT/$GOOGLE_ARTIFACT_REGISTRY/$IMAGE_NAME:$IMAGE_TAG --allow-unauthenticated --max-instances $MAX_INSTANCES --platform managed --region=$GOOGLE_REGION $IMAGE_NAME --service-account=$CLOUD_RUN_SERVICE_ACCOUNT"
