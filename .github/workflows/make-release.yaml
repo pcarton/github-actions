@@ -3,8 +3,13 @@ name: Make a new Release
 on:
   workflow_call:
     inputs:
-      reletive_package_file_path:
+      relative_package_file_path:
         description: 'Package file (like package.json, Cargo.toml, etc) that needs to be updated'
+        required: false
+        type: string
+      version_prefix:
+        description: 'String to prefix releases with'
+        default: 'v'
         required: false
         type: string
     secrets:
@@ -34,11 +39,11 @@ jobs:
       with:
         bump_version_scheme: ${{ github.actor == 'dependabot[bot]' && 'patch' || 'minor'  }}
         dry_run: false
-        tag_prefix: ''
+        tag_prefix: ${{ inputs.version_prefix }}
 
   update-package-file:
     runs-on: ubuntu-latest
-    if: ${{ inputs.reletive_package_file_path == 'Cargo.toml'}}
+    if: ${{ inputs.relative_package_file_path == 'Cargo.toml'}}
     permissions:
       contents: 'write'
       pull-requests: 'read'
