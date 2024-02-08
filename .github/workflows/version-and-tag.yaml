@@ -8,6 +8,6 @@ on:
 
 jobs:
   make-new-release:
-    uses: pcarton/github-actions/.github/workflows/make-release@version-step
+    uses: pcarton/github-actions/.github/workflows/make-release.yaml@version-step
     secrets:
       input_github_token: ${{ secrets.GITHUB_TOKEN }}
