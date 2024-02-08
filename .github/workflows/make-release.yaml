@@ -19,7 +19,7 @@ jobs:
   make-new-release:
     runs-on: ubuntu-latest
     permissions:
-      contents: 'read'
+      contents: 'write'
       pull-requests: 'read'
       id-token: 'write'
     env:
