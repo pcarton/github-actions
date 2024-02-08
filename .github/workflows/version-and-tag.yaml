@@ -7,6 +7,6 @@ on:
 
 jobs:
   make-new-release:
-    uses: pcarton/github-actions/.github/workflows/make-release.yaml@v0.4.0
+    uses: pcarton/github-actions/.github/workflows/make-release.yaml@main
     secrets:
       input_github_token: ${{ secrets.GITHUB_TOKEN }}
