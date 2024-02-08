@@ -38,13 +38,14 @@ jobs:
 
   update-package-file:
     runs-on: ubuntu-latest
-    if: ${{ inputs.reletive_package_file_path == "Cargo.toml"}}
+    if: ${{ inputs.reletive_package_file_path == 'Cargo.toml'}}
     permissions:
       contents: 'write'
       pull-requests: 'read'
       id-token: 'write'
     env:
       GITHUB_TOKEN: ${{ inputs.input_github_token }}
+    needs: [ make-new-release ]
 
     steps:
     - name: Check out the repo
