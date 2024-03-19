@@ -79,7 +79,7 @@ jobs:
     - id: build_image
       name: 'Build Docker image to GAR'
       run: |-
-        gcloud builds submit --config ${{ inputs.build_config_path }} --tag us-docker.pkg.dev/$GCLOUD_PROJECT/$GOOGLE_ARTIFACT_REGISTRY/$IMAGE_NAME:$IMAGE_TAG ${{ inputs.source_directory_path }}
+        gcloud builds submit --config ${{ inputs.build_config_path }} --substitutions _GCLOUD_PROJECT=$GCLOUD_PROJECT,_GOOGLE_ARTIFACT_REGISTRY=$GOOGLE_ARTIFACT_REGISTRY,_IMAGE_NAME=$IMAGE_NAME,_IMAGE_TAG=$IMAGE_TAG ${{ inputs.source_directory_path }}
         echo "image=us-docker.pkg.dev/$GCLOUD_PROJECT/$GOOGLE_ARTIFACT_REGISTRY/$IMAGE_NAME:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
     - id: retag_image_as_latest
