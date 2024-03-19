@@ -70,6 +70,7 @@ jobs:
 
     - name: 'Set up Cloud SDK'
       uses: 'google-github-actions/setup-gcloud@v2.1.0'
+      install_components: 'beta'
 
     - id: auth_docker
       name: "Auth Docker"
