@@ -1,0 +1,31 @@
+name: Build and Validate Dockerfile
+
+on:
+  workflow_call:
+    inputs:
+      dockerfile_path:
+        description: 'Path to the Dockerfile to build'
+        required: true
+        type: string
+      docker_build_context:
+        description: 'The directory to run the build in'
+        required: true
+        type: string
+    secrets:
+      input_github_token:
+        required: true
+
+jobs:
+  validate-docker-build:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.input_github_token }}
+    steps:
+      - name: Checkout the Repo
+        uses: actions/checkout@v4.1.2
+      - name: Build Docker Image
+        uses: docker/build-push-action@v5.3.0
+        with:
+          context: ${{ inputs.docker_build_context }}
+          file: ${{ inputs.dockerfile_path }}
+          push: false
