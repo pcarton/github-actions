@@ -58,18 +58,18 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4.1.1
+      uses: actions/checkout@v4.1.2
       with:
         submodules: recursive
 
     - id: 'auth'
-      uses: 'google-github-actions/auth@v2.1.2'
+      uses: google-github-actions/auth@v2.1.2
       with:
         workload_identity_provider: ${{ inputs.workload_identity_provider }}
         service_account: ${{ inputs.workload_identity_service_account }}
 
     - name: 'Set up Cloud SDK'
-      uses: 'google-github-actions/setup-gcloud@v2.1.0'
+      uses: google-github-actions/setup-gcloud@v2.1.0
       with:
         install_components: 'beta'
 
