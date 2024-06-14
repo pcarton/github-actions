@@ -61,10 +61,6 @@ jobs:
     steps:
     - name: Check out the repo
       uses: actions/checkout@v4.1.6
-    - name: Check out the script
-      uses: actions/checkout@v4.1.6
-      with:
-        name: pcarton/github-actions
     - name: Install pngcrush
       run: |
         sudo apt update && sudo apt install -y pngcrush
