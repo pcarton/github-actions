@@ -1,0 +1,87 @@
+name: Compress Images in Directory Losslessly
+
+on:
+  workflow_call:
+    inputs:
+      directory:
+        description: 'The directory containing the images to compress'
+        required: true
+        type: string
+      compress_svg:
+        description: 'Whether to compress .SVG files'
+        required: true
+        type: boolean
+      compress_png:
+        description: 'Whether to compress .PNG files'
+        required: true
+        type: boolean
+    secrets:
+      input_github_token:
+        required: true
+
+jobs:
+  compress-svgs:
+    runs-on: ubuntu-latest
+    if: ${{ inputs.compress_svg }}
+    permissions:
+      contents: 'write'
+      pull-requests: 'read'
+      id-token: 'write'
+    env:
+      GITHUB_TOKEN: ${{ secrets.input_github_token }}
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v4.1.6
+    - name: Install svgo
+      run: |
+        npm install -g svgo
+    - name: Compress SVGs
+      run: |
+        svgo -f ${{ inputs.directory }}
+    - name: Commit and push changes
+      run: |
+        git config --global user.name "pcarton"
+        git config --global user.email "patrick.d.carton@gmail.com"
+        git config advice.addIgnoredFile false
+        git config pull.rebase true
+        git add ${{ inputs.directory }}/*.svg
+        if git status --porcelain | grep -q '^A'; then
+          git commit -m "Compress SVG images in ${{ inputs.directory }}"
+          git pull
+          git push
+        fi
+
+  compress-pngs:
+    runs-on: ubuntu-latest
+    if: ${{ inputs.compress_png }}
+    permissions:
+      contents: 'write'
+      pull-requests: 'read'
+      id-token: 'write'
+    env:
+      GITHUB_TOKEN: ${{ secrets.input_github_token }}
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v4.1.6
+    - name: Install pngcrush
+      run: |
+        sudo apt update && sudo apt install -y pngcrush
+    - name: Compress PNGs
+      run: |
+        cd "${{ inputs.directory }}" || { echo "Directory not found"; exit 1; }
+        for file in *.png; do
+          pngcrush -brute "$file" "tmp.png"
+          mv "tmp.png" "$file"
+        done
+    - name: Commit and push changes
+      run: |
+        git config --global user.name "pcarton"
+        git config --global user.email "patrick.d.carton@gmail.com"
+        git config advice.addIgnoredFile false
+        git config pull.rebase true
+        git add ${{ inputs.directory }}/*.png
+        if git status --porcelain | grep -q '^A'; then
+          git commit -m "Compress PNG images in ${{ inputs.directory }}"
+          git pull
+          git push
+        fi
