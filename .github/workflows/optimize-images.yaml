@@ -65,7 +65,7 @@ jobs:
         name: pcarton/github-actions
     - name: Install pngcrush
       run: |
-        apt update && apt install pngcrush
+        sudo apt update && sudo apt install -y pngcrush
     - name: Compress PNGs
       run: |
         cd "${{ inputs.directory }}" || { echo "Directory not found"; exit 1; }
