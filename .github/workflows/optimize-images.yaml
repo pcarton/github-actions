@@ -45,6 +45,7 @@ jobs:
         git config advice.addIgnoredFile false
         git add ${{ inputs.directory }}/*.svg
         git commit -m "Compress SVG images in ${{ inputs.directory }}"
+        git pull
         git push
 
   compress-pngs:
@@ -80,4 +81,5 @@ jobs:
         git config advice.addIgnoredFile false
         git add ${{ inputs.directory }}/*.png
         git commit -m "Compress PNG images in ${{ inputs.directory }}"
+        git pull
         git push
