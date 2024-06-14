@@ -45,7 +45,7 @@ jobs:
         git config advice.addIgnoredFile false
         git config pull.rebase true
         git add ${{ inputs.directory }}/*.svg
-        if git status --porcelain | grep -q '^A'; then
+        if git status --porcelain | grep -q -e '^\s*[AM]'; then
           git commit -m "Compress SVG images in ${{ inputs.directory }}"
           git pull
           git push
@@ -80,7 +80,7 @@ jobs:
         git config advice.addIgnoredFile false
         git config pull.rebase true
         git add ${{ inputs.directory }}/*.png
-        if git status --porcelain | grep -q '^A'; then
+        if git status --porcelain | grep -q -e '^\s*[AM]'; then
           git commit -m "Compress PNG images in ${{ inputs.directory }}"
           git pull
           git push
