@@ -45,9 +45,11 @@ jobs:
         git config advice.addIgnoredFile false
         git config pull.rebase true
         git add ${{ inputs.directory }}/*.svg
-        git commit -m "Compress SVG images in ${{ inputs.directory }}"
-        git pull
-        git push
+        if git status --porcelain | grep -q '^A'; then
+          git commit -m "Compress SVG images in ${{ inputs.directory }}"
+          git pull
+          git push
+        fi
 
   compress-pngs:
     runs-on: ubuntu-latest
@@ -78,6 +80,8 @@ jobs:
         git config advice.addIgnoredFile false
         git config pull.rebase true
         git add ${{ inputs.directory }}/*.png
-        git commit -m "Compress PNG images in ${{ inputs.directory }}"
-        git pull
-        git push
+        if git status --porcelain | grep -q '^A'; then
+          git commit -m "Compress PNG images in ${{ inputs.directory }}"
+          git pull
+          git push
+        fi
