@@ -25,6 +25,8 @@ jobs:
         uses: actions/checkout@v4.1.7
       - name: Build Docker Image
         uses: docker/build-push-action@v6.0.0
+        env:
+          DOCKER_BUILD_NO_SUMMARY: true
         with:
           context: ${{ inputs.docker_build_context }}
           file: ${{ inputs.dockerfile_path }}
