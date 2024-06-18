@@ -24,7 +24,7 @@ jobs:
       - name: Checkout the Repo
         uses: actions/checkout@v4.1.7
       - name: Build Docker Image
-        uses: docker/build-push-action@v6.0.0
+        uses: docker/build-push-action@v6.0.1
         env:
           DOCKER_BUILD_NO_SUMMARY: true
         with:
