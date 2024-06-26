@@ -12,6 +12,11 @@ on:
         default: 'v'
         required: false
         type: string
+      default_increment:
+        description: 'Default release version, one of major, minor, patch'
+        default: 'minor'
+        required: false
+        type: string
     secrets:
       input_github_token:
         required: true
@@ -37,7 +42,7 @@ jobs:
       name: Bump Release
       uses: rymndhng/release-on-push-action@v0.28.0
       with:
-        bump_version_scheme: ${{ github.actor == 'dependabot[bot]' && 'patch' || 'minor'  }}
+        bump_version_scheme: ${{ github.actor == 'dependabot[bot]' && 'patch' || inputs.default_increment  }}
         dry_run: false
         tag_prefix: ${{ inputs.version_prefix }}
 
