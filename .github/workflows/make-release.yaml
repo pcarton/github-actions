@@ -59,7 +59,7 @@ jobs:
 
     steps:
     - name: Check out the repo
-      uses: actions/checkout@v4.2.0
+      uses: actions/checkout@v4.2.1
     - name: "Update Cargo.toml"
       run: |
         sed -i.bak -e 's/^\s*version = "\{0,1\}[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*"\s*$/version = "${{ needs.make-new-release.outputs.version }}"/g' Cargo.toml
