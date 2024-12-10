@@ -21,7 +21,7 @@ on:
 
 jobs:
   compress-svgs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: ${{ inputs.compress_svg }}
     permissions:
       contents: 'write'
@@ -30,29 +30,29 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.input_github_token }}
     steps:
-    - name: Check out the repo
-      uses: actions/checkout@v4.2.2
-    - name: Install svgo
-      run: |
-        npm install -g svgo
-    - name: Compress SVGs
-      run: |
-        svgo -f ${{ inputs.directory }}
-    - name: Commit and push changes
-      run: |
-        git config --global user.name "pcarton"
-        git config --global user.email "patrick.d.carton@gmail.com"
-        git config advice.addIgnoredFile false
-        git config pull.rebase true
-        git add ${{ inputs.directory }}/*.svg
-        if git status --porcelain | grep -q -e '^\s*[AM]'; then
-          git commit -m "Compress SVG images in ${{ inputs.directory }}"
-          git pull
-          git push
-        fi
+      - name: Check out the repo
+        uses: actions/checkout@v4.2.2
+      - name: Install svgo
+        run: |
+          npm install -g svgo
+      - name: Compress SVGs
+        run: |
+          svgo -f ${{ inputs.directory }}
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "pcarton"
+          git config --global user.email "patrick.d.carton@gmail.com"
+          git config advice.addIgnoredFile false
+          git config pull.rebase true
+          git add ${{ inputs.directory }}/*.svg
+          if git status --porcelain | grep -q -e '^\s*[AM]'; then
+            git commit -m "Compress SVG images in ${{ inputs.directory }}"
+            git pull
+            git push
+          fi
 
   compress-pngs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: ${{ inputs.compress_png }}
     permissions:
       contents: 'write'
@@ -61,27 +61,27 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.input_github_token }}
     steps:
-    - name: Check out the repo
-      uses: actions/checkout@v4.2.2
-    - name: Install pngcrush
-      run: |
-        sudo apt update && sudo apt install -y pngcrush
-    - name: Compress PNGs
-      run: |
-        cd "${{ inputs.directory }}" || { echo "Directory not found"; exit 1; }
-        for file in *.png; do
-          pngcrush -brute "$file" "tmp.png"
-          mv "tmp.png" "$file"
-        done
-    - name: Commit and push changes
-      run: |
-        git config --global user.name "pcarton"
-        git config --global user.email "patrick.d.carton@gmail.com"
-        git config advice.addIgnoredFile false
-        git config pull.rebase true
-        git add ${{ inputs.directory }}/*.png
-        if git status --porcelain | grep -q -e '^\s*[AM]'; then
-          git commit -m "Compress PNG images in ${{ inputs.directory }}"
-          git pull
-          git push
-        fi
+      - name: Check out the repo
+        uses: actions/checkout@v4.2.2
+      - name: Install pngcrush
+        run: |
+          sudo apt update && sudo apt install -y pngcrush
+      - name: Compress PNGs
+        run: |
+          cd "${{ inputs.directory }}" || { echo "Directory not found"; exit 1; }
+          for file in *.png; do
+            pngcrush -brute "$file" "tmp.png"
+            mv "tmp.png" "$file"
+          done
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "pcarton"
+          git config --global user.email "patrick.d.carton@gmail.com"
+          git config advice.addIgnoredFile false
+          git config pull.rebase true
+          git add ${{ inputs.directory }}/*.png
+          if git status --porcelain | grep -q -e '^\s*[AM]'; then
+            git commit -m "Compress PNG images in ${{ inputs.directory }}"
+            git pull
+            git push
+          fi
