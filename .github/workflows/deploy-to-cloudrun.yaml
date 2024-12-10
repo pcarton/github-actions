@@ -35,7 +35,7 @@ on:
 
 jobs:
   deploy-to-cloudrun:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: 'read'
       pull-requests: 'read'
@@ -43,20 +43,20 @@ jobs:
     env:
       GOOGLE_REGION: ${{ inputs.google_region }}
       SERVICE_NAME: ${{ inputs.service_name }}
-      IMAGE:  ${{ inputs.image }}
+      IMAGE: ${{ inputs.image }}
       CLOUD_RUN_SERVICE_ACCOUNT: ${{ inputs.cloud_run_service_account }}
       MAX_INSTANCES: ${{ inputs.max_instances }}
 
     steps:
-    - id: 'auth'
-      uses: google-github-actions/auth@v2.1.7
-      with:
-        workload_identity_provider: ${{ inputs.workload_identity_provider }}
-        service_account: ${{ inputs.workload_identity_service_account }}
+      - id: 'auth'
+        uses: google-github-actions/auth@v2.1.7
+        with:
+          workload_identity_provider: ${{ inputs.workload_identity_provider }}
+          service_account: ${{ inputs.workload_identity_service_account }}
 
-    - name: 'Set up Cloud SDK'
-      uses: google-github-actions/setup-gcloud@v2.1.2
+      - name: 'Set up Cloud SDK'
+        uses: google-github-actions/setup-gcloud@v2.1.2
 
-    - id: deploy_image
-      name: "Deploy image to Cloud Run"
-      run: "gcloud run deploy --image=$IMAGE --allow-unauthenticated --max-instances $MAX_INSTANCES --platform=managed --region=$GOOGLE_REGION $SERVICE_NAME --ingress=internal-and-cloud-load-balancing --service-account=$CLOUD_RUN_SERVICE_ACCOUNT"
+      - id: deploy_image
+        name: "Deploy image to Cloud Run"
+        run: "gcloud run deploy --image=$IMAGE --allow-unauthenticated --max-instances $MAX_INSTANCES --platform=managed --region=$GOOGLE_REGION $SERVICE_NAME --ingress=internal-and-cloud-load-balancing --service-account=$CLOUD_RUN_SERVICE_ACCOUNT"
