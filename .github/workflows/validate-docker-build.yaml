@@ -17,14 +17,14 @@ on:
 
 jobs:
   validate-docker-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       GITHUB_TOKEN: ${{ secrets.input_github_token }}
     steps:
       - name: Checkout the Repo
         uses: actions/checkout@v4.2.2
       - name: Build Docker Image
-        uses: docker/build-push-action@v6.10.0
+        uses: docker/build-push-action@v6.11.0
         env:
           DOCKER_BUILD_NO_SUMMARY: true
         with:

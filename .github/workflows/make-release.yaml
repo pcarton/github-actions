@@ -27,7 +27,7 @@ on:
 
 jobs:
   make-new-release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: 'write'
       pull-requests: 'read'
@@ -38,16 +38,16 @@ jobs:
       version: ${{ steps.bump_release.outputs.version }}
 
     steps:
-    - id: bump_release
-      name: Bump Release
-      uses: rymndhng/release-on-push-action@v0.28.0
-      with:
-        bump_version_scheme: ${{ github.actor == 'dependabot[bot]' && 'patch' || inputs.default_increment  }}
-        dry_run: false
-        tag_prefix: ${{ inputs.version_prefix }}
+      - id: bump_release
+        name: Bump Release
+        uses: rymndhng/release-on-push-action@v0.28.0
+        with:
+          bump_version_scheme: ${{ github.actor == 'dependabot[bot]' && 'patch' || inputs.default_increment  }}
+          dry_run: false
+          tag_prefix: ${{ inputs.version_prefix }}
 
   update-package-file:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: ${{ inputs.relative_package_file_path == 'Cargo.toml'}}
     permissions:
       contents: 'write'
@@ -55,19 +55,19 @@ jobs:
       id-token: 'write'
     env:
       GITHUB_TOKEN: ${{ secrets.input_github_token }}
-    needs: [ make-new-release ]
+    needs: [make-new-release]
 
     steps:
-    - name: Check out the repo
-      uses: actions/checkout@v4.2.2
-    - name: "Update Cargo.toml"
-      run: |
-        sed -i.bak -e 's/^\s*version = "\{0,1\}[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*"\s*$/version = "${{ needs.make-new-release.outputs.version }}"/g' Cargo.toml
-    - name: Commit and push changes
-      run: |
-        git config --global user.name "pcarton"
-        git config --global user.email "patrick.d.carton@gmail.com"
-        git config advice.addIgnoredFile false
-        git add Cargo.toml
-        git commit -m "Update Cargo.toml"
-        git push
+      - name: Check out the repo
+        uses: actions/checkout@v4.2.2
+      - name: "Update Cargo.toml"
+        run: |
+          sed -i.bak -e 's/^\s*version = "\{0,1\}[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*"\s*$/version = "${{ needs.make-new-release.outputs.version }}"/g' Cargo.toml
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "pcarton"
+          git config --global user.email "patrick.d.carton@gmail.com"
+          git config advice.addIgnoredFile false
+          git add Cargo.toml
+          git commit -m "Update Cargo.toml"
+          git push
