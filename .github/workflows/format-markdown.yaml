@@ -1,0 +1,58 @@
+name: Format Markdown Files with dprint
+
+on:
+  workflow_call:
+    inputs:
+      directory:
+        description: 'The directory containing the markdownfiles to compress'
+        required: true
+        type: string
+    secrets:
+      input_github_token:
+        required: true
+
+jobs:
+  format-markdown:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: 'write'
+      pull-requests: 'read'
+      id-token: 'write'
+    env:
+      GITHUB_TOKEN: ${{ secrets.input_github_token }}
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v4.2.2
+    - name: Install dprint
+      run: |
+        npm install -g dprint
+    - name: Create .dprint.json
+      run: |
+        cat <<EOF > $HOME/.dprint.json
+        {
+          "markdown": {
+            "lineWidth": 120,
+          },
+          "excludes": [],
+          "plugins": [
+            "https://plugins.dprint.dev/markdown-0.17.8.wasm"
+          ]
+        }
+        EOF
+    - name: Format all Markdown Files
+      run: |
+        dprint fmt ${{ inputs.directory }}/**/*.md
+    - name: Commit and push changes
+      run: |
+        git config --global user.name "pcarton"
+        git config --global user.email "patrick.d.carton@gmail.com"
+        git config advice.addIgnoredFile false
+        git config pull.rebase true
+        git add ${{ inputs.directory }}/**/*.md
+        if git status --porcelain | grep -q -e '^\s*[AM]'; then
+          git commit -m "Formatted markdown files in ${{ inputs.directory }}"
+          git pull
+          git push
+          fi
+
+
