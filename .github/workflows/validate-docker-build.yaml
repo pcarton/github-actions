@@ -22,7 +22,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.input_github_token }}
     steps:
       - name: Checkout the Repo
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5.0.0
       - name: Build Docker Image
         uses: docker/build-push-action@v6.18.0
         env:
